@@ -65,7 +65,7 @@ The returning would looks like
 ```commandline
 NAME               TYPE           CLUSTER-IP    EXTERNAL-IP     PORT(S)        AGE
 azure-vote-back    ClusterIP      10.0.213.77   <none>          6379/TCP       25h
-azure-vote-front   LoadBalancer   10.0.1.54     <xx.xxx.xx.xxx>   80:30111/TCP   25h
+azure-vote-front   LoadBalancer   10.0.1.54     xx.xxx.xx.xxx   80:30111/TCP   25h
 kubernetes         ClusterIP      10.0.0.1      <none>          443/TCP        25h
 ```
 Use a browser to open the EXTERNAL-IP. The app works same as the one on 'http://localhost:8080'. But it is hosted by AKS.
