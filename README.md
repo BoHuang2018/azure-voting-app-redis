@@ -41,10 +41,13 @@ There are two instances of Azure Container Registry (staging and prod). We can p
 ```commandline
 make push_to_acr_staging
 ```
-This commend involves another commend to login to the correct Azure Container Registry.
+This commend involves another commend to login to a instance of Azure Container Registry in staging environment.
 
 ### 2.2 Prod
-Wait for infrastructure
+```commandline
+make push_to_acr_prod
+```
+This commend involves another commend to login to a instance of Azure Container Registry in production environment.
 
 
 ## 3. Deploy to AKS
@@ -54,12 +57,12 @@ There are two instances of AKS (staging and prod). We will deploy
 
 ### 3.1 Staging
 ```commandline
-make make deploy_to_aks_staging
+make deploy_to_aks_staging
 ```
-The deployment comment 
+The deployment comment involves authenticate AKS in staging environment.
 The first time's deployment may take a few moment. We can verify the deployment by
 ```commandline
-kubectl get serives
+kubectl get serive
 ```
 The returning would looks like
 ```commandline
@@ -70,5 +73,24 @@ kubernetes         ClusterIP      10.0.0.1      <none>          443/TCP        2
 ```
 Use a browser to open the EXTERNAL-IP. The app works same as the one on 'http://localhost:8080'. But it is hosted by AKS.
 
+
 ### 3.2 Prod
-Wait for infrastructure
+```commandline
+make deploy_to_aks_prod
+```
+Same logic as 3.1, but in the production environment. Because of the hidden AKS authentication command, 
+the `kubectl get service` will give different value of `EXTERNAL-IP` and `CLUSTER-IP`:
+```commandline
+NAME               TYPE           CLUSTER-IP     EXTERNAL-IP      PORT(S)        AGE
+azure-vote-back    ClusterIP      10.0.119.106   <none>           6379/TCP       68m
+azure-vote-front   LoadBalancer   10.0.180.46    zz.zzz.zz.zzz    80:30771/TCP   68m
+kubernetes         ClusterIP      10.0.0.1       <none>           443/TCP        74m
+```
+And the app opened by the EXTERNAL-IP should work same as the one on 'http://localhost:8080'.
+
+#### *Note*: 
+The first deployment may encounter 'ImagePullBackOff' and 'ErrImagePull' situations. The reason is that the Azure Container Registry has not been 
+attached to the AKS. We can attach it with the following command
+```commandline
+az aks update -n myAKSCluster -g myResourceGroup --attach-acr <acr-name> --subscription <subscription ID or name>
+```
