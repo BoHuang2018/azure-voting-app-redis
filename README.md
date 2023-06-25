@@ -8,24 +8,28 @@ products:
 description: "This sample creates a multi-container application in an Azure Kubernetes Service (AKS) cluster."
 ---
 
-# Azure Voting App
+# Coop Fish Voting App
 
-This sample creates a multi-container application in an Azure Kubernetes Service (AKS) cluster. The application interface has been built using Python / Flask. The data component is using Redis.
+We use this repo as a sample to present that a terraform-managed infrastructure (AKS, Azure Container Registry ...) can be 
+object of deployment container images.
 
-To walk through a quick deployment of this application, see the AKS [quick start](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough?WT.mc_id=none-github-nepeters).
+The Azure infrastructure is managed by another repository consisted of Terraform scripts mainly. All required environmental variables 
+are rooted from that terraform repository.
 
-To walk through a complete experience where this code is packaged into container images, uploaded to Azure Container Registry, and then run in and AKS cluster, see the [AKS tutorials](https://docs.microsoft.com/en-us/azure/aks/tutorial-kubernetes-prepare-app?WT.mc_id=none-github-nepeters).
+We will go through a path like: local test --> deploy to staging --> deploy to prod.
 
-## Contributing
+## 1. Local Test
+To build an image of the app and run it locally (if we need a new version tag, change the value of `version` in `Makefile`):
+```commandline
+make local-image-test
+```
+The running app will be visible on `http://localhost:8080`. 
+To turn off the running app, we use `docker compose down` to stop the app and remove the containers.
+But the created images are still there, `docker images` will show it
+```commandline
+REPOSITORY                                               TAG                        IMAGE ID      
+mcr.microsoft.com/azuredocs/azure-vote-front             v2                         8cd22ff578ea  
+```
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.microsoft.com.
-
-When you submit a pull request, a CLA-bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
-
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+## 2. Push Image to Azure Container Registry
+### 2.1 Staging
